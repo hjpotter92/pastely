@@ -1,0 +1,40 @@
+{
+  "dependencies": {
+    "@tailwindcss/forms": "^0.3.2",
+    "next": "^10.2.0",
+    "next-react-svg": "^1.1.2",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-hook-form": "^7.5.0",
+    "tailwindcss": "^2.1.2"
+  },
+  "name": "pastely",
+  "version": "1.0.0",
+  "description": "The web frontend for the pastely project.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "start": "next start",
+    "build": "next build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/hjpotter92/pastely.git"
+  },
+  "keywords": [
+    "pastely",
+    "paste",
+    "share",
+    "snippet",
+    "tiny",
+    "url",
+    "shortener"
+  ],
+  "author": "hjpotter92",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hjpotter92/pastely/issues"
+  },
+  "homepage": "https://github.com/hjpotter92/pastely#readme"
+}

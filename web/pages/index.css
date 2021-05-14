@@ -1,0 +1,19 @@
+fieldset {
+  @apply border border-double rounded-lg p-4 my-2 block;
+}
+
+fieldset > legend {
+  @apply text-lg font-bold text-blue-500;
+}
+
+input[type="checkbox"] {
+  @apply mr-2 checked:bg-green-500 border-red-600;
+}
+
+.checked {
+  @apply text-green-500 font-bold;
+}
+
+.unchecked {
+  @apply text-red-300 focus:border-red-500;
+}
