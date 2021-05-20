@@ -38,7 +38,9 @@ def retrieve_content(item: dict):
     if not item.get("shortener"):
         content = get_s3_object(item["id"])
         item["content"] = content["Body"].read().decode("utf-8")
-    for key in {"passphrase", }:
+    for key in {
+        "passphrase",
+    }:
         if key in item:
             del item[key]
     return item
@@ -56,19 +58,18 @@ def handler(event: dict, context):
     db = boto3.resource("dynamodb")
     table = db.Table(Config.DYNAMODB_TABLE)
     item = table.get_item(Key={"id": paste_id})["Item"]
-    if item.get("private"):
-        passphrase = get_auth_password(headers)
-        if passphrase is None:
-            return {
-                "statusCode": 401,
-                "body": json.dumps("The content is restricted! Provide passphrase."),
-            }
-        print(passphrase, item)
-        if hasher.verify(item["passphrase"], passphrase):
-            return retrieve_content(item)
-        else:
-            return {
-                "statusCode": 403,
-                "body": json.dumps("The provided password is incorrect."),
-            }
-    return retrieve_content(item)
+    if not item.get("private"):
+        return retrieve_content(item)
+    passphrase = get_auth_password(headers)
+    if passphrase is None:
+        return {
+            "statusCode": 401,
+            "body": json.dumps("The content is restricted! Provide passphrase."),
+        }
+    if hasher.verify(item["passphrase"], passphrase):
+        return retrieve_content(item)
+    else:
+        return {
+            "statusCode": 403,
+            "body": json.dumps("The provided password is incorrect."),
+        }
