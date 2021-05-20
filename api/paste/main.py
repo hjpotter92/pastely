@@ -26,11 +26,10 @@ import nanoid
 from argon2 import PasswordHasher
 from schema import And, Optional, Or, Schema, Use
 
-hasher = PasswordHasher()
-
 
 logger = logging.getLogger(__name__)
 generate = lambda: nanoid.generate(ascii_letters + digits, 10)
+hasher = PasswordHasher()
 
 
 def validate_field(data: dict):
