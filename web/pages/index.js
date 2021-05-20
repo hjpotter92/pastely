@@ -9,7 +9,7 @@ export default function Index() {
     watch,
   } = useForm();
   const watchShortener = watch("shortener", false);
-  const watchProtect = watch("protect", false);
+  const watchPrivate = watch("private", false);
 
   const onSubmit = console.log;
 
@@ -26,27 +26,28 @@ export default function Index() {
             <input id="shortener" {...register("shortener")} type="checkbox" />
             <span>Only shorten a single URL</span>
           </label>
-          {watchShortener && (
-            <input id="shorten" {...register("shorten")} type="text" />
-          )}
         </fieldset>
 
         <fieldset>
           <legend>Text snippet</legend>
           <div className="grid grid-cols-2 gap-4">
-            <input
-              id="title"
-              type="text"
-              {...register("title")}
-              required
-              placeholder="Snippet title"
-            />
-            <input
-              id="syntax"
-              type="text"
-              {...register("syntax")}
-              placeholder="Syntax highlight"
-            />
+            {!watchShortener && (
+              <>
+                <input
+                  id="title"
+                  type="text"
+                  {...register("title")}
+                  required
+                  placeholder="Snippet title"
+                />
+                <input
+                  id="syntax"
+                  type="text"
+                  {...register("syntax")}
+                  placeholder="Syntax highlight"
+                />
+              </>
+            )}{" "}
             <textarea
               cols="120"
               id="content"
@@ -60,11 +61,11 @@ export default function Index() {
 
         <fieldset>
           <legend>Encrypt snippet/redirect</legend>
-          <label className={(watchProtect && "checked") || "unchecked"}>
-            <input type="checkbox" {...register("protect")} />
-            <span>Protect/encrypt content with passphrase</span>
+          <label className={(watchPrivate && "checked") || "unchecked"}>
+            <input type="checkbox" {...register("private")} />
+            <span>Private/encrypt content with passphrase</span>
           </label>
-          {watchProtect && (
+          {watchPrivate && (
             <input
               id="text"
               type="text"
