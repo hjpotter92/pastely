@@ -5,4 +5,11 @@ async function retrievePaste(id) {
   return data.json();
 }
 
-export default { retrievePaste };
+async function submitPaste(data) {
+  return await fetch(`${API_URL}/`, {
+    method: "post",
+    body: JSON.stringify(data),
+  });
+}
+
+export default { retrievePaste, submitPaste };
