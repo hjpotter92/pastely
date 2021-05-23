@@ -30,12 +30,14 @@ export default function PastelyId({ data }) {
           href="https://highlightjs.org/static/demo/styles/monokai.css"
           rel="stylesheet"
         />
-        {title && <title>{title} - Pastely</title>}
+        <title>{title || id} - Pastely</title>
       </Head>
       <div>
         <div>{id}</div>
         <div>{created_at}</div>
-        {expiry && <div>Expires in {expiry} hours</div>}
+        {(expiry && expiry > 0 && <div>Expires in {expiry} hours</div>) || (
+          <></>
+        )}
         <div className="float-right">Copy | Download | Raw | New</div>
         <div className="float-left font-bold text-xl">
           {title} {syntax && `(${syntax})`}

@@ -1,5 +1,6 @@
 import React from "react";
 import { useForm } from "react-hook-form";
+import Languages from "./languages";
 
 export default function Form({ onSubmit }) {
   const { register, handleSubmit, watch } = useForm();
@@ -25,15 +26,9 @@ export default function Form({ onSubmit }) {
                 id="title"
                 type="text"
                 {...register("title")}
-                required
                 placeholder="Snippet title"
               />
-              <input
-                id="syntax"
-                type="text"
-                {...register("syntax")}
-                placeholder="Syntax highlight"
-              />
+              <Languages {...register("syntax")} />
             </>
           )}
           <textarea
@@ -42,7 +37,7 @@ export default function Form({ onSubmit }) {
             rows="10"
             placeholder="lorem"
             className="resize w-full col-span-2"
-            {...register("content")}
+            {...register("content", { required: true })}
           ></textarea>
         </div>
       </fieldset>
@@ -67,10 +62,8 @@ export default function Form({ onSubmit }) {
         <legend>Expiry</legend>
         <label>
           Set expiry duration for the snippet
-          <select id="expiry" {...register("expiry")}>
-            <option value="0" selected>
-              Never expire
-            </option>
+          <select id="expiry" {...register("expiry")} defaultValue="0">
+            <option value="0">Never expire</option>
             <option value="1">1 hour</option>
             <option value="2">2 hours</option>
             <option value="6">6 hours</option>
@@ -85,7 +78,11 @@ export default function Form({ onSubmit }) {
           </select>
         </label>
       </fieldset>
-      <input name="submit" type="submit" />
+      <input
+        name="submit"
+        type="submit"
+        className="rounded-lg py-2 px-5 bg-blue-200 hover:bg-blue-600 focus:outline-none focus:ring-4 font-semibold"
+      />
     </form>
   );
 }
