@@ -15,6 +15,7 @@ The content received will be of the format:
 """
 
 import datetime
+import json
 import logging
 from dataclasses import dataclass
 from json import loads
@@ -46,10 +47,15 @@ def is_true(value: str) -> bool:
     return bool(value)
 
 
+def get_cron_expression(date: datetime.datetime) -> str:
+    return f"cron({date.minute} {date.hour} {date.day} {date.month} ? {date.year})"
+
+
 @dataclass
 class Config:
     DYNAMODB_TABLE = getenv("PASTELY_DYNAMODB_TABLE")
     S3_BUCKET = getenv("PASTELY_S3_BUCKET")
+    DELETE_LAMBDA_ARN = getenv("PASTELY_DELETE_LAMBDA_ARN")
     SCHEMA = Schema(
         And(
             Use(loads),
@@ -59,7 +65,7 @@ class Config:
                 Optional("syntax", default="plaintext"): And(str, len),
                 "content": And(str, len),
                 Optional("private"): Use(is_true),
-                Optional("expiry"): And(
+                Optional("expiry", default=0): And(
                     Use(int),
                     Or(0, 1, 2, 6, 12, 24, 144, 288, 730, 1460, 4383, 8766),
                 ),
@@ -106,6 +112,29 @@ def put_data_to_s3(name, **data: dict):
     )
 
 
+def add_deletion_trigger_event(data: dict):
+    events = boto3.client("events")
+    _id = data["id"]
+    created = datetime.datetime.fromisoformat(data["created_at"])
+    expiry = created + datetime.timedelta(hours=data["expiry"])
+    rule_name = f"pastely-delete-{_id}"
+    events.put_rule(
+        Name=rule_name,
+        ScheduleExpression=get_cron_expression(expiry),
+        Description=f"Delete the pastely object '{_id}' at {expiry.isoformat()}",
+    )
+    events.put_targets(
+        Rule=rule_name,
+        Targets=[
+            {
+                "Id": "1",
+                "Arn": Config.DELETE_LAMBDA_ARN,
+                "Input": json.dumps({"id": _id}),
+            }
+        ],
+    )
+
+
 def handler(event: dict, context):
     logger.info(
         "Received event '%s' with context: %s",
@@ -123,6 +152,8 @@ def handler(event: dict, context):
     if not data.get("shortener"):
         logger.info("Request to upload file to S3.")
         put_data_to_s3(paste_id, **data)
+    if data["expiry"] > 0:
+        add_deletion_trigger_event(data)
     return {
         "id": paste_id,
     }
